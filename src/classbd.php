@@ -1,22 +1,26 @@
 <?php
 namespace babirondo\classbd;
-use PDO,MongoDB;
+use PDO;
+use MongoDB;
 
 class db
 {
-    function conecta($bd="Postgres")
+    public $conectado = false;
+    public $pdo;
+    public $bd;
+
+    function conecta($bd="Postgres", $host, $db, $username, $password, $port=NULL)
     {
-        require_once("globais.php");
 
-        $this->globais = new Globais();
-        //	echo "\n Conectando no banco: ".$this->globais->banco ;
-
+        $this->bd = $bd;
         switch ($bd){
             case("Postgres"):
                 try {
-                    $this->pdo = new PDO("pgsql:host=".$this->globais->localhost."	dbname=".  $this->globais->db ,  $this->globais->username,    $this->globais->password);
+                    $this->pdo = new PDO("pgsql:host=".$host."	dbname=". $db ,  $username,    $password);
                     $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true );
+
+
                 }
                 catch(PDOException $e) {
                     $this->erro =  '<font color=red>Error: ' . $e->getMessage();
@@ -27,18 +31,26 @@ class db
             break;
 
             case("Mongo"):
+                $port = (($port == NULL)?"27017":$port);
 
-                $this->mongo = new MongoDB\Client("mongodb://localhost:27017");
+                try {
+                  $this->mongo = new MongoDB\Driver\Manager("mongodb://$host:$port");
 
+                }
+                catch(PDOException $e) {
+                    $this->erro =  '<font color=red>Error: ' . $e->getMessage();
+                    $this->conectado = false;
+                    return false;
+                }
                 $this->conectado = true;
 
-                return $this->mongo;
-                break;
+
+              break;
         }
 
 
 
-        return true;
+        return $this;
     }
 
     function executa($sql, $prepared=0, $l=__LINE__, $debug=null)
