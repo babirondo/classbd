@@ -7,15 +7,25 @@ class db
 {
     public $conectado = false;
     public $pdo;
-    public $bd;
+    public $host;
+    public $db;
+    public $username;
+    public $banco;
+    public $sql;
 
     function conecta($bd="Postgres", $host, $db, $username, $password, $port=NULL)
     {
 
-        $this->bd = $bd;
+        $this->banco = $bd;
         switch ($bd){
             case("Postgres"):
                 try {
+                  $this->host = $host;
+                  $this->db = $db;
+                  $this->username = $username;
+
+                    $port = (($port == NULL)?"5432":$port);
+
                     $conn = "pgsql:host=$host; port=$port;	dbname=$db  ";
                     $this->pdo = new PDO($conn, $username,    $password);
 
@@ -28,6 +38,7 @@ class db
                     $this->erro =  '<font color=red>Error: ' . $e->getMessage().' \n <BR>
                                       host='.$host.'; port='.$port.';	dbname='.$db.'   , username:'.$username.'
                                     </font>';
+                    echo   $this->erro;
                     $this->conectado = false;
                     return false;
                 }
@@ -50,6 +61,15 @@ class db
 
 
               break;
+
+              default:
+                $this->erro =  '<BR>\n <font color=red>Error: Nao conectado a nenhum tipo de banco \n <BR>
+                                  db='.$db.', host='.$host.'; port='.$port.';	dbname='.$db.'   , username:'.$username.'
+                                </font>';
+                echo   $this->erro;
+                $this->conectado = false;
+                return false;
+              break;
         }
 
 
@@ -57,9 +77,22 @@ class db
         return $this;
     }
 
+    function displayError($error){
+      echo "<BR><BR>
+                 Error PDO:   <BR>
+                  <font color=#ff0000>" . $error ." </font><BR>
+                 SQL: <textarea rows=8 cols=90>".$this->sql."</textarea> <BR>
+                 BANCO: ".$this->banco." <BR>
+                 DATABASE:".$this->db." <BR>
+                 USER:".$this->username." <BR>
+                 HOST:".$this->host." <BR>
+                 </font>" ;
+    }
+
     function executa($sql, $prepared=0, $l=__LINE__, $debug=null)
     {
         $this->dados = null;
+        $this->sql = $sql;
         if (substr(TRIM(STRTOUPPER($sql)),0,strpos(TRIM(STRTOUPPER($sql)), " " )  ) == "SELECT")
         {
             try {
@@ -71,18 +104,16 @@ class db
                 else
                     $this->nrw = null;
             }
-            catch(PDOException $e) {
+            catch(\PDOException $e) {
                 // if ($debug == 1)
-                echo "Error PDO: <font color=#00aa00><pre>".var_export($sql)."</font></pre>" . $e->getMessage();
+                $this->displayError($e->getMessage());
             }
-            catch(Exception $e) {
+            catch(\Exception $e) {
                 // if ($debug == 1)
-                echo "\n $sql";
-                echo 'Error EXCEPTION: ' . $e->getMessage();
+
+                echo '<BR> <font color=#ff0000><pre>  Error EXCEPTION:  ' . $e->getMessage()." </font></pre>";
             }
-            finally {
-                // após exceptions roda isso
-            }
+
             return $this->res;
         }
         else{
@@ -117,4 +148,9 @@ class db
             return   false;
         }
     }
+
+    function fechar()
+     {
+         $this->pdo = null;
+     }    
 }
