@@ -16,14 +16,18 @@ class db
         switch ($bd){
             case("Postgres"):
                 try {
-                    $this->pdo = new PDO("pgsql:host=".$host."	dbname=". $db ,  $username,    $password);
+                    $conn = "pgsql:host=$host; port=$port;	dbname=$db  ";
+                    $this->pdo = new PDO($conn, $username,    $password);
+
                     $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true );
 
 
                 }
                 catch(PDOException $e) {
-                    $this->erro =  '<font color=red>Error: ' . $e->getMessage();
+                    $this->erro =  '<font color=red>Error: ' . $e->getMessage().' \n <BR>
+                                      host='.$host.'; port='.$port.';	dbname='.$db.'   , username:'.$username.'
+                                    </font>';
                     $this->conectado = false;
                     return false;
                 }
