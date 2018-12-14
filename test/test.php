@@ -3,5 +3,5 @@ require_once __DIR__ . '/../vendor/autoload.php'; // Autoload files using Compos
 
 $classbd = new \babirondo\classbd\db();
 
-s
+
 echo "foi";
