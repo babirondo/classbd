@@ -1,0 +1,19 @@
+{
+    "name": "babirondo/classbd",
+    "type": "package",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "authors": [
+        {
+            "name": "Bruno Rodrigues Siqueira",
+            "email": "babirondo@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+       "psr-0": {
+           "babirondo\\classbd\\": "./"
+       }
+   }
+}
