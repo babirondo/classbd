@@ -12,6 +12,8 @@ class db
     public $username;
     public $banco;
     public $sql;
+    public $MongoDB;
+    public $MongoTable;
 
     function conecta($bd="Postgres", $host, $db, $username, $password, $port=NULL)
     {
@@ -43,13 +45,15 @@ class db
                     return false;
                 }
                 $this->conectado = true;
+                return $this;
             break;
 
             case("Mongo"):
                 $port = (($port == NULL)?"27017":$port);
 
                 try {
-                  $this->mongo = new MongoDB\Driver\Manager("mongodb://$host:$port");
+                  $this->Mongo = new MongoDB\Client("mongodb://$host:$port");
+	 	 
 
                 }
                 catch(PDOException $e) {
@@ -59,6 +63,7 @@ class db
                 }
                 $this->conectado = true;
 
+                return $this->Mongo;
 
               break;
 
@@ -74,7 +79,6 @@ class db
 
 
 
-        return $this;
     }
 
     function displayError($error){
@@ -152,5 +156,76 @@ class db
     function fechar()
      {
          $this->pdo = null;
-     }    
+     }
+
+
+
+     //FOR Mongo
+      function MongoFind($filter, $params=array()){
+//	$db = $this->Mongo->selectDB($this->MongoDB)	;
+//	$collection = new MongoCollection ($db, $this->MongoTable);
+
+
+	$db =    $this->MongoDB;
+	$table = $this->MongoTable;
+	$conectadoTabela = $this->Mongo->$db->$table ;
+	$resultMongo = $conectadoTabela->find( $filter, $params )  ;
+//var_dump(  ($resultMongo)  );
+//        if (is_array($resultMongo)){
+	  return iterator_to_array($resultMongo);
+//        }
+//	return $resultMongo;
+      }
+
+      function MongoInsertOne($json){
+		$db =    $this->MongoDB;
+		$table = $this->MongoTable;
+		$conectadoTabela = $this->Mongo->$db->$table ;
+	
+		$resultMongo = $conectadoTabela->InsertOne( $json )  ;
+
+
+        return $resultMongo;
+      }
+
+      function MongoUpdateOne($filter, $param=array(), $options=array()){
+                $db =    $this->MongoDB;
+                $table = $this->MongoTable;
+                $conectadoTabela = $this->Mongo->$db->$table ;
+
+
+//		$filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
+//	        $options = array( 'upsert' => true, 'multi' => false ); //
+//	        $param =   array(  '$set' => $jsonRAW );
+
+
+
+                $resultMongo = $conectadoTabela->UpdateOne($filter, $param, $options )  ;
+
+
+        return $resultMongo;
+      }
+
+      function MongoDeleteOne($filter){
+                $db =    $this->MongoDB;
+                $table = $this->MongoTable;
+                $conectadoTabela = $this->Mongo->$db->$table ;
+
+
+//              $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
+//                $options = array( 'upsert' => true, 'multi' => false ); //
+//                $param =   array(  '$set' => $jsonRAW );
+
+
+
+                $resultMongo = $conectadoTabela->DeleteOne($filter )  ;
+
+
+        return $resultMongo;
+
+
+      }
+
+
+
 }
