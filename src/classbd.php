@@ -3,6 +3,8 @@ namespace babirondo\classbd;
 use PDO;
 use MongoDB;
 
+// foi ?
+
 class db
 {
     public $conectado = false;
