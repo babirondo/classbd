@@ -209,23 +209,16 @@ class db
       }
 
       function MongoDeleteOne($filter){
-                $db =    $this->MongoDB;
-                $table = $this->MongoTable;
-                $conectadoTabela = $this->Mongo->$db->$table ;
+          $db =    $this->MongoDB;
+          $table = $this->MongoTable;
+          $conectadoTabela = $this->Mongo->$db->$table ;
 
+          $resultMongo = $conectadoTabela->DeleteOne($filter )  ;
 
-//              $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
-//                $options = array( 'upsert' => true, 'multi' => false ); //
-//                $param =   array(  '$set' => $jsonRAW );
-
-
-
-                $resultMongo = $conectadoTabela->DeleteOne($filter )  ;
-
-
-        return $resultMongo;
-
-
+          if ($resultMongo->getDeletedCount() > 0)
+            return $resultMongo->getDeletedCount();
+          else
+            return false;
       }
 
       function MongoToObject( $arg ){
