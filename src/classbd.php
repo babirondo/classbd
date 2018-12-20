@@ -55,7 +55,7 @@ class db
 
                 try {
                   $this->Mongo = new MongoDB\Client("mongodb://$host:$port");
-	 	 
+
 
                 }
                 catch(PDOException $e) {
@@ -183,7 +183,7 @@ class db
 		$db =    $this->MongoDB;
 		$table = $this->MongoTable;
 		$conectadoTabela = $this->Mongo->$db->$table ;
-	
+
 		$resultMongo = $conectadoTabela->InsertOne( $json )  ;
 
 
@@ -228,6 +228,8 @@ class db
 
       }
 
-
+      function MongoToObject( $arg ){
+        return new MongoDB\BSON\ObjectID( $arg)  ;
+      }
 
 }

@@ -2,7 +2,8 @@
     "name": "babirondo/classbd",
     "type": "package",
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "mongodb/mongodb": "^1.0.0"
     },
     "authors": [
         {
